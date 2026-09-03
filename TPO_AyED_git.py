@@ -21,27 +21,12 @@ condiciones = [2,3,1,1,1,1,2,3,1,2]
 
 #FUNCIONES DE USO GENERAL
 #FUNCION DE BUSQUEDA EN LISTA
-def buscar_en_listas_secuencial(lista, dato):
+def buscar_en_listas(lista, dato):
     indice = 0
     while indice < len(lista):
         if lista[indice] == dato:
             return indice
         indice = indice + 1
-    return -1
-
-#FUNCION DE BUSQUEDA BINARIA
-# PRECONDICION: la lista debe estar ordenada de menor a mayor
-def buscar_en_listas_binaria(lista, dato):
-    izquierda = 0
-    derecha = len(lista) - 1
-    while izquierda <= derecha:
-        medio = (izquierda + derecha) // 2
-        if lista[medio] == dato:
-            return medio
-        elif lista[medio] < dato:
-            izquierda = medio + 1
-        else:
-            derecha = medio - 1
     return -1
 
 #FUNCION DE ORDENAMIENTO POR SELECCION
@@ -149,8 +134,8 @@ def alta_estudiantes(codigo, nombre, edad, age):
 def baja_estudiantes(codigos, nombres, edades, ages, calificaciones):
     codigo = pedir_entero("Ingrese el código del estudiante a eliminar: ")
     if codigo in codigos:
-        pos = buscar_en_listas_secuencial(codigos, codigo)
-        pos_calificacion = buscar_en_listas_secuencial(calificaciones, codigo)
+        pos = buscar_en_listas(codigos, codigo)
+        pos_calificacion = buscar_en_listas(calificaciones, codigo)
         if pos_calificacion != -1:
             print("No se puede eliminar porque tiene calificaciones asociadas")
         else:
@@ -169,7 +154,7 @@ def modificacion_estudiantes(codigos, nombres, edades, ages):
     if codigo in codigos:
         # Ordenar por codigo antes de usar busqueda binaria
         ordenar_estudiantes_por_codigo(codigos, nombres, edades, ages)
-        pos = buscar_en_listas_binaria(codigos, codigo)
+        pos = buscar_en_listas(codigos, codigo)
         nombres[pos] = input("Ingrese nuevo nombre: ")
         edad = pedir_entero("Ingrese nueva edad: ")
         while edad < 17 or edad > 99:
@@ -218,8 +203,8 @@ def alta_materias(codigo, nombre, cuatrimestre, carga_horaria):
 def baja_materias(codigos, nombres, cuatrimestre, carga_horaria, codigos_materias_calif):
     codigo = pedir_entero("Ingrese el código de la materia a eliminar: ")
     if codigo in codigos:
-        pos = buscar_en_listas_secuencial(codigos, codigo)
-        pos_calificacion = buscar_en_listas_secuencial(codigos_materias_calif, codigo)
+        pos = buscar_en_listas(codigos, codigo)
+        pos_calificacion = buscar_en_listas(codigos_materias_calif, codigo)
         if pos_calificacion != -1:
             print("No se puede eliminar porque tiene calificaciones asociadas")
         else:
@@ -235,7 +220,7 @@ def baja_materias(codigos, nombres, cuatrimestre, carga_horaria, codigos_materia
 def modificacion_materias(codigos, nombres, cuatrimestre, carga_horaria):
     codigo = pedir_entero("Ingrese el código de la materia que desea modificar: ")
     if codigo in codigos:
-        pos = buscar_en_listas_secuencial(codigos, codigo)
+        pos = buscar_en_listas(codigos, codigo)
         nombres[pos] = input("Ingrese nuevo nombre de la materia: ")
         nuevo_cuatri = pedir_entero("Ingrese el nuevo cuatrimestre: ")
         while nuevo_cuatri < 1 or nuevo_cuatri > 2:
@@ -288,7 +273,7 @@ def alta_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones,
 def baja_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones):
     codigo = pedir_entero("Ingrese el código de la calificación a eliminar: ")
     if codigo in codigos_calif:
-        pos = buscar_en_listas_secuencial(codigos_calif, codigo)
+        pos = buscar_en_listas(codigos_calif, codigo)
         codigos_calif.pop(pos)
         est_calif.pop(pos)
         mat_calif.pop(pos)
@@ -302,7 +287,7 @@ def baja_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones)
 def modificacion_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones, codigos_estudiantes, codigos_materias):
     codigo = pedir_entero("Ingrese el código de la calificación que desea modificar: ")
     if codigo in codigos_calif:
-        pos = buscar_en_listas_secuencial(codigos_calif, codigo)
+        pos = buscar_en_listas(codigos_calif, codigo)
         codigo_est = pedir_entero("Ingrese el nuevo código del estudiante: ")
         while codigo_est not in codigos_estudiantes:
             codigo_est = pedir_entero("Ese estudiante no existe. Ingréselo de nuevo: ")
@@ -487,7 +472,7 @@ def listas_a_matriz(lista1, lista2, lista3):
 def conservar_unicos(matriz):
     unicos = []
     for fila in matriz:
-        if buscar_en_listas_secuencial(unicos, fila[1]) == -1:
+        if buscar_en_listas(unicos, fila[1]) == -1:
             unicos.append(fila[1])
     return unicos
 
@@ -514,7 +499,7 @@ def armar_matriz_estadisticas(materias_unicas):
     return matriz
 
 def obtener_nombre_materia(codigo):
-    pos = buscar_en_listas_secuencial(codigos_materias, codigo)
+    pos = buscar_en_listas(codigos_materias, codigo)
     if pos != -1:
         return nombres_materias[pos]
     return "Desconocida"
