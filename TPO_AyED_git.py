@@ -195,13 +195,21 @@ def alta_materias(codigo, nombre, cuatrimestre, carga_horaria):
     print("La materia",nuevo_nombre,nuevo_codigo," a sido dada de alta correctamente")
 
 #FUNCION DE BAJA MATERIAS
-def baja_materias(codigos, nombres, cuatrimestre, carga_horaria, codigos_materias_calif):
+def baja_materias(codigos, nombres, cuatrimestre, carga_horaria,codigos_calif, est_calif, mat_calif, notas, condiciones):
     codigo = pedir_entero("Ingrese el código de la materia a eliminar: ")
     if codigo in codigos:
         pos = buscar_en_listas(codigos, codigo)
-        pos_calificacion = buscar_en_listas(codigos_materias_calif, codigo)
+        pos_calificacion = buscar_en_listas(mat_calif, codigo)
         if pos_calificacion != -1:
             print("No se puede eliminar porque tiene calificaciones asociadas")
+            vaciar_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones)
+            if buscar_en_listas(mat_calif, codigo) != -1:
+                return
+            del codigos[pos]
+            del nombres[pos]
+            del cuatrimestre[pos]
+            del carga_horaria[pos]
+            print("Materia dada de baja correctamente.")
         else:
             del codigos[pos]
             del nombres[pos]
@@ -277,6 +285,18 @@ def baja_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones)
         print("Calificación eliminada correctamente.")
     else:
         print("Código de calificación no encontrado.")
+
+def vaciar_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones):
+    confirmacion = input("Para eliminar la materia se deben eliminar las calificaciones, desea eliminar todas las calificaciones? (si/no): ")
+    if confirmacion == "si":
+        codigos_calif.clear()
+        est_calif.clear()
+        mat_calif.clear()
+        notas.clear()
+        condiciones.clear()
+        print("Todas las calificaciones fueron eliminadas.")
+    else:
+        print("No se eliminaron las calificaciones.")
 
 #FUNCION DE MODIFICACION CALIFICACIONES
 def modificacion_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones, codigos_estudiantes, codigos_materias):
@@ -383,7 +403,7 @@ def submenu2():
         if opcion == 1:
             alta_materias(codigos_materias, nombres_materias, cuatrimestres, cargas_horarias)
         elif opcion == 2:
-            baja_materias(codigos_materias, nombres_materias, cuatrimestres, cargas_horarias, codigos_materias_calif)
+            baja_materias(codigos_materias, nombres_materias, cuatrimestres, cargas_horarias,codigos_calificaciones, codigos_estudiantes_calif,codigos_materias_calif, notas, condiciones)
         elif opcion == 3:
             modificacion_materias(codigos_materias, nombres_materias, cuatrimestres, cargas_horarias)
         elif opcion == 4:
