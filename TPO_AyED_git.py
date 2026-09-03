@@ -139,10 +139,10 @@ def baja_estudiantes(codigos, nombres, edades, ages, calificaciones):
         if pos_calificacion != -1:
             print("No se puede eliminar porque tiene calificaciones asociadas")
         else:
-            codigos.pop(pos)
-            nombres.pop(pos)
-            edades.pop(pos)
-            ages.pop(pos)
+            del codigos[pos]
+            del nombres[pos]
+            del edades[pos]
+            del ages[pos]
             print("Estudiante eliminado correctamente.")
     else:
         print("Código de estudiante no encontrado.")
@@ -208,10 +208,10 @@ def baja_materias(codigos, nombres, cuatrimestre, carga_horaria, codigos_materia
         if pos_calificacion != -1:
             print("No se puede eliminar porque tiene calificaciones asociadas")
         else:
-            codigos.pop(pos)
-            nombres.pop(pos)
-            cuatrimestre.pop(pos)
-            carga_horaria.pop(pos)
+            del codigos[pos]
+            del nombres[pos]
+            del cuatrimestre[pos]
+            del carga_horaria[pos]
             print("Materia dada de baja correctamente.")
     else:
         print("Código de materia no encontrado.")
@@ -274,11 +274,11 @@ def baja_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones)
     codigo = pedir_entero("Ingrese el código de la calificación a eliminar: ")
     if codigo in codigos_calif:
         pos = buscar_en_listas(codigos_calif, codigo)
-        codigos_calif.pop(pos)
-        est_calif.pop(pos)
-        mat_calif.pop(pos)
-        notas.pop(pos)
-        condiciones.pop(pos)
+        del codigos_calif[pos]
+        del est_calif[pos]
+        del mat_calif[pos]
+        del notas[pos]
+        del condiciones[pos]
         print("Calificación eliminada correctamente.")
     else:
         print("Código de calificación no encontrado.")
