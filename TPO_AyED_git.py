@@ -1,34 +1,22 @@
-# LISTAS
-
+from functools import reduce
+# LISTA
 # ESTUDIANTES
 codigos_estudiantes = [100,101,102,103,104,105,106,107,108,109]
-
 nombres_estudiantes = [ "Mora Lassalle","Matías Cura","Marcos Silva Sapia","Nicolás Patiño Pizarro","Vera Spina","Lyndsy Camara","Lara Hoffman","Juliana Sofia Gamas","Juan Pérez","Tomas Fernández"]
-
 edades_estudiantes = [21,22,23,20,24,21,22,20,22,25]
-
 ages_cursada = [2,2,3,1,3,1,1,1,2,4]
-
 
 # MATERIAS
 codigos_materias = [200,201,202,203,204,205,206,207,208,209]
-
 nombres_materias = ["Inglés","Programación","Estadística","Cálculo I","Diseño Web","Sistemas Operativos","Álgebra","Física I","Algoritmos","Economía"]
-
 cuatrimestres = [1,1,1,1,2,2,2,2,2,1]
-
 cargas_horarias = [4,4,4,4,4,4,4,4,4,4]
-
 
 # CALIFICACIONES
 codigos_calificaciones = [1,2,3,4,5,6,7,8,9,10]
-
 codigos_estudiantes_calif = [100,101,102,103,104,105,106,107,108,109]
-
 codigos_materias_calif = [202,201,204,200,206,208,207,205,203,209]
-
 notas = [8,3,6,7,6,5,9,2,4,9]
-
 condiciones = [2,3,1,1,1,1,2,3,1,2]
 
 #FUNCIONES DE USO GENERAL
@@ -339,7 +327,7 @@ def modificacion_calificaciones(codigos_calif, est_calif, mat_calif, notas, cond
 def listado_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones):
     for i in range(len(codigos_calif)):
         print("Codigo:", codigos_calif[i], "- Estudiante:", est_calif[i],
-              "- Materia:", mat_calif[i], "- Nota:", notas[i], "- Condición:", condiciones[i])
+            "- Materia:", mat_calif[i], "- Nota:", notas[i], "- Condición:", condiciones[i])
 
 
 # Login
