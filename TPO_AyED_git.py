@@ -29,61 +29,56 @@ def buscar_en_listas(lista, dato):
         indice = indice + 1
     return -1
 
-#FUNCION DE ORDENAMIENTO POR SELECCION
+#FUNCION DE ORDENAMIENTO POR EDAD
 def ordenar_estudiantes_por_edad(codigos, nombres, edades, ages):
+    estudiantes = []
     for i in range(len(edades)):
-        min_idx = i
-        for j in range(i+1, len(edades)):
-            if edades[j] < edades[min_idx]:
-                min_idx = j
-        edades[i], edades[min_idx] = edades[min_idx], edades[i]
-        codigos[i], codigos[min_idx] = codigos[min_idx], codigos[i]
-        nombres[i], nombres[min_idx] = nombres[min_idx], nombres[i]
-        ages[i], ages[min_idx] = ages[min_idx], ages[i]
+        estudiantes.append([edades[i], codigos[i], nombres[i], ages[i]])
+    estudiantes.sort()
+    for i in range(len(estudiantes)):
+        edades[i] = estudiantes[i][0]
+        codigos[i] = estudiantes[i][1]
+        nombres[i] = estudiantes[i][2]
+        ages[i] = estudiantes[i][3]
     print("Estudiantes ordenados por edad.")
 
-#FUNCION AUXILIAR: ordena codigos_estudiantes por codigo (para habilitar busqueda binaria en modificacion)
+#FUNCION AUXILIAR: ordena codigos_estudiantes por codigo
 def ordenar_estudiantes_por_codigo(codigos, nombres, edades, ages):
+    estudiantes = []
     for i in range(len(codigos)):
-        min_idx = i
-        for j in range(i+1, len(codigos)):
-            if codigos[j] < codigos[min_idx]:
-                min_idx = j
-        codigos[i], codigos[min_idx] = codigos[min_idx], codigos[i]
-        nombres[i], nombres[min_idx] = nombres[min_idx], nombres[i]
-        edades[i], edades[min_idx] = edades[min_idx], edades[i]
-        ages[i], ages[min_idx] = ages[min_idx], ages[i]
+        estudiantes.append([codigos[i], nombres[i], edades[i], ages[i]])
+    estudiantes.sort()
+    for i in range(len(estudiantes)):
+        codigos[i] = estudiantes[i][0]
+        nombres[i] = estudiantes[i][1]
+        edades[i] = estudiantes[i][2]
+        ages[i] = estudiantes[i][3]
 
-#FUNCION DE ORDENAMIENTO POR BURBUJA
+#FUNCION DE ORDENAMIENTO POR NOTA
 def ordenar_calificaciones_por_nota(codigos_calif, est_calif, mat_calif, notas, condiciones):
+    calificaciones = []
     for i in range(len(notas)):
-        for j in range(0, len(notas)-i-1):
-            if notas[j] > notas[j+1]:
-                notas[j], notas[j+1] = notas[j+1], notas[j]
-                codigos_calif[j], codigos_calif[j+1] = codigos_calif[j+1], codigos_calif[j]
-                est_calif[j], est_calif[j+1] = est_calif[j+1], est_calif[j]
-                mat_calif[j], mat_calif[j+1] = mat_calif[j+1], mat_calif[j]
-                condiciones[j], condiciones[j+1] = condiciones[j+1], condiciones[j]
+        calificaciones.append([notas[i], codigos_calif[i], est_calif[i], mat_calif[i], condiciones[i]])
+    calificaciones.sort()
+    for i in range(len(calificaciones)):
+        notas[i] = calificaciones[i][0]
+        codigos_calif[i] = calificaciones[i][1]
+        est_calif[i] = calificaciones[i][2]
+        mat_calif[i] = calificaciones[i][3]
+        condiciones[i] = calificaciones[i][4]
     print("Calificaciones ordenadas por nota.")
 
-#FUNCION DE ORDENAMIENTO POR INSERCION
+#FUNCION DE ORDENAMIENTO POR CUATRIMESTRE
 def ordenar_materias_por_cuatrimestre(codigos, nombres, cuatrimestre, carga_horaria):
-    for i in range(1, len(cuatrimestre)):
-        clave_cuatrimestre = cuatrimestre[i]
-        clave_codigo = codigos[i]
-        clave_nombre = nombres[i]
-        clave_carga = carga_horaria[i]
-        j = i - 1
-        while j >= 0 and clave_cuatrimestre < cuatrimestre[j]:
-            cuatrimestre[j+1] = cuatrimestre[j]
-            codigos[j+1] = codigos[j]
-            nombres[j+1] = nombres[j]
-            carga_horaria[j+1] = carga_horaria[j]
-            j = j - 1
-        cuatrimestre[j+1] = clave_cuatrimestre
-        codigos[j+1] = clave_codigo
-        nombres[j+1] = clave_nombre
-        carga_horaria[j+1] = clave_carga
+    materias = []
+    for i in range(len(cuatrimestre)):
+        materias.append([cuatrimestre[i], codigos[i], nombres[i], carga_horaria[i]])
+    materias.sort()
+    for i in range(len(materias)):
+        cuatrimestre[i] = materias[i][0]
+        codigos[i] = materias[i][1]
+        nombres[i] = materias[i][2]
+        carga_horaria[i] = materias[i][3]
     print("Materias ordenadas por cuatrimestre.")
 
 # FUNCION AUXILIAR: pide un numero entero al usuario, repite si no es un numero
