@@ -1,8 +1,5 @@
 # LISTAS
 
-# Se importa reduce de functools (libreria estandar de Python, no es una libreria externa)
-# porque el TP exige usar map, filter y reduce con funciones lambda.
-from functools import reduce
 
 # ESTUDIANTES
 codigos_estudiantes = [100,101,102,103,104,105,106,107,108,109]
