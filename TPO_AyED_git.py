@@ -1,38 +1,35 @@
-# LISTAS
+from functools import reduce
+import re
+
+# ============================================================
+# LISTAS (listas paralelas)
+# ============================================================
 
 # ESTUDIANTES
 codigos_estudiantes = [100,101,102,103,104,105,106,107,108,109]
-
-nombres_estudiantes = [ "Mora Lassalle","Matías Cura","Marcos Silva Sapia","Nicolás Patiño Pizarro","Vera Spina","Lyndsy Camara","Lara Hoffman","Juliana Sofia Gamas","Juan Pérez","Tomas Fernández"]
-
+nombres_estudiantes = ["Mora Lassalle","Matías Cura","Marcos Silva Sapia","Nicolás Patiño Pizarro","Vera Spina","Lyndsy Camara","Lara Hoffman","Juliana Sofia Gamas","Juan Pérez","Tomas Fernández"]
 edades_estudiantes = [21,22,23,20,24,21,22,20,22,25]
-
 ages_cursada = [2,2,3,1,3,1,1,1,2,4]
-
+correos_estudiantes = ["mora.lassalle@mail.com","matias.cura@mail.com","marcos.silva@mail.com","nicolas.patino@mail.com","vera.spina@mail.com","lyndsy.camara@mail.com","lara.hoffman@mail.com","juliana.gamas@mail.com","juan.perez@mail.com","tomas.fernandez@mail.com"]
 
 # MATERIAS
 codigos_materias = [200,201,202,203,204,205,206,207,208,209]
-
 nombres_materias = ["Inglés","Programación","Estadística","Cálculo I","Diseño Web","Sistemas Operativos","Álgebra","Física I","Algoritmos","Economía"]
-
 cuatrimestres = [1,1,1,1,2,2,2,2,2,1]
-
 cargas_horarias = [4,4,4,4,4,4,4,4,4,4]
-
 
 # CALIFICACIONES
 codigos_calificaciones = [1,2,3,4,5,6,7,8,9,10]
-
 codigos_estudiantes_calif = [100,101,102,103,104,105,106,107,108,109]
-
 codigos_materias_calif = [202,201,204,200,206,208,207,205,203,209]
-
 notas = [8,3,6,7,6,5,9,2,4,9]
-
 condiciones = [2,3,1,1,1,1,2,3,1,2]
 
-#FUNCIONES DE USO GENERAL
-#FUNCION DE BUSQUEDA EN LISTA
+# ============================================================
+# FUNCIONES DE USO GENERAL: BUSQUEDA
+# ============================================================
+
+# FUNCION DE BUSQUEDA SECUENCIAL
 def buscar_en_listas_secuencial(lista, dato):
     indice = 0
     while indice < len(lista):
@@ -41,7 +38,7 @@ def buscar_en_listas_secuencial(lista, dato):
         indice = indice + 1
     return -1
 
-#FUNCION DE BUSQUEDA BINARIA
+# FUNCION DE BUSQUEDA BINARIA
 # PRECONDICION: la lista debe estar ordenada de menor a mayor
 def buscar_en_listas_binaria(lista, dato):
     izquierda = 0
@@ -56,44 +53,57 @@ def buscar_en_listas_binaria(lista, dato):
             derecha = medio - 1
     return -1
 
-#FUNCION DE ORDENAMIENTO POR SELECCION
-def ordenar_estudiantes_por_edad(codigos, nombres, edades, ages):
+# ============================================================
+# FUNCIONES DE USO GENERAL: ORDENAMIENTO
+# ============================================================
+
+# FUNCION DE ORDENAMIENTO POR SELECCION (edad)
+def ordenar_estudiantes_por_edad(codigos, nombres, edades, ages, correos):
     for i in range(len(edades)):
         min_idx = i
-        for j in range(i+1, len(edades)):
+        for j in range(i + 1, len(edades)):
             if edades[j] < edades[min_idx]:
                 min_idx = j
         edades[i], edades[min_idx] = edades[min_idx], edades[i]
         codigos[i], codigos[min_idx] = codigos[min_idx], codigos[i]
         nombres[i], nombres[min_idx] = nombres[min_idx], nombres[i]
         ages[i], ages[min_idx] = ages[min_idx], ages[i]
+        correos[i], correos[min_idx] = correos[min_idx], correos[i]
     print("Estudiantes ordenados por edad.")
 
-#FUNCION AUXILIAR: ordena codigos_estudiantes por codigo (para habilitar busqueda binaria en modificacion)
-def ordenar_estudiantes_por_codigo(codigos, nombres, edades, ages):
+# FUNCION AUXILIAR: ordena por codigo (selección) para habilitar busqueda binaria en modificacion
+def ordenar_estudiantes_por_codigo(codigos, nombres, edades, ages, correos):
     for i in range(len(codigos)):
         min_idx = i
-        for j in range(i+1, len(codigos)):
+        for j in range(i + 1, len(codigos)):
             if codigos[j] < codigos[min_idx]:
                 min_idx = j
         codigos[i], codigos[min_idx] = codigos[min_idx], codigos[i]
         nombres[i], nombres[min_idx] = nombres[min_idx], nombres[i]
         edades[i], edades[min_idx] = edades[min_idx], edades[i]
         ages[i], ages[min_idx] = ages[min_idx], ages[i]
+        correos[i], correos[min_idx] = correos[min_idx], correos[i]
 
-#FUNCION DE ORDENAMIENTO POR BURBUJA
+# FUNCION DE ORDENAMIENTO POR BURBUJA (nota), con corte anticipado
 def ordenar_calificaciones_por_nota(codigos_calif, est_calif, mat_calif, notas, condiciones):
-    for i in range(len(notas)):
-        for j in range(0, len(notas)-i-1):
-            if notas[j] > notas[j+1]:
-                notas[j], notas[j+1] = notas[j+1], notas[j]
-                codigos_calif[j], codigos_calif[j+1] = codigos_calif[j+1], codigos_calif[j]
-                est_calif[j], est_calif[j+1] = est_calif[j+1], est_calif[j]
-                mat_calif[j], mat_calif[j+1] = mat_calif[j+1], mat_calif[j]
-                condiciones[j], condiciones[j+1] = condiciones[j+1], condiciones[j]
+    n = len(notas)
+    for i in range(n):
+        # Si en una pasada completa no hay intercambios, la lista ya esta ordenada
+        # y se corta el bucle externo antes de tiempo.
+        hubo_intercambio = False
+        for j in range(0, n - i - 1):
+            if notas[j] > notas[j + 1]:
+                notas[j], notas[j + 1] = notas[j + 1], notas[j]
+                codigos_calif[j], codigos_calif[j + 1] = codigos_calif[j + 1], codigos_calif[j]
+                est_calif[j], est_calif[j + 1] = est_calif[j + 1], est_calif[j]
+                mat_calif[j], mat_calif[j + 1] = mat_calif[j + 1], mat_calif[j]
+                condiciones[j], condiciones[j + 1] = condiciones[j + 1], condiciones[j]
+                hubo_intercambio = True
+        if not hubo_intercambio:
+            break
     print("Calificaciones ordenadas por nota.")
 
-#FUNCION DE ORDENAMIENTO POR INSERCION
+# FUNCION DE ORDENAMIENTO POR INSERCION (cuatrimestre)
 def ordenar_materias_por_cuatrimestre(codigos, nombres, cuatrimestre, carga_horaria):
     for i in range(1, len(cuatrimestre)):
         clave_cuatrimestre = cuatrimestre[i]
@@ -102,16 +112,20 @@ def ordenar_materias_por_cuatrimestre(codigos, nombres, cuatrimestre, carga_hora
         clave_carga = carga_horaria[i]
         j = i - 1
         while j >= 0 and clave_cuatrimestre < cuatrimestre[j]:
-            cuatrimestre[j+1] = cuatrimestre[j]
-            codigos[j+1] = codigos[j]
-            nombres[j+1] = nombres[j]
-            carga_horaria[j+1] = carga_horaria[j]
+            cuatrimestre[j + 1] = cuatrimestre[j]
+            codigos[j + 1] = codigos[j]
+            nombres[j + 1] = nombres[j]
+            carga_horaria[j + 1] = carga_horaria[j]
             j = j - 1
-        cuatrimestre[j+1] = clave_cuatrimestre
-        codigos[j+1] = clave_codigo
-        nombres[j+1] = clave_nombre
-        carga_horaria[j+1] = clave_carga
+        cuatrimestre[j + 1] = clave_cuatrimestre
+        codigos[j + 1] = clave_codigo
+        nombres[j + 1] = clave_nombre
+        carga_horaria[j + 1] = clave_carga
     print("Materias ordenadas por cuatrimestre.")
+
+# ============================================================
+# FUNCIONES DE USO GENERAL: VALIDACION DE ENTRADAS
+# ============================================================
 
 # FUNCION AUXILIAR: pide un numero entero al usuario, repite si no es un numero
 def pedir_entero(mensaje):
@@ -134,17 +148,39 @@ def pedir_entero(mensaje):
             return int(entrada)
         print("Entrada invalida. Por favor ingrese un numero entero.")
 
-#FUNCIONES ESTUDIANTES
-#FUNCION DE ALTA ESTUDIANTES
-def alta_estudiantes(codigo, nombre, edad, age):
+# FUNCION DE VALIDACION DE CORREO CON EXPRESIONES REGULARES
+# Patron: texto@texto.dominio (sin espacios, con un solo @ y un punto en el dominio)
+def validar_email(correo):
+    patron = r"^[\w\.]+@[\w]+\.[a-z]{2,}$"
+    if re.match(patron, correo):
+        return True
+    return False
+
+# FUNCION AUXILIAR: pide un correo valido al usuario, repite si no cumple el formato
+def pedir_email(mensaje):
+    while True:
+        correo = input(mensaje)
+        if validar_email(correo):
+            return correo
+        print("Correo invalido. Formato esperado: usuario@dominio.com")
+
+# FUNCION DE EXTRACCION DE DATOS CON EXPRESIONES REGULARES
+# Extrae el dominio (lo que sigue despues del @) de un correo ya validado
+def extraer_dominio(correo):
+    resultado = re.search(r"@([A-Za-z0-9.-]+)", correo)
+    if resultado:
+        return resultado.group(1)
+    return "desconocido"
+
+# ============================================================
+# FUNCIONES ESTUDIANTES
+# ============================================================
+
+def alta_estudiantes(codigo, nombre, edad, age, correo):
     nuevo_codigo = pedir_entero("Ingrese el codigo del estudiante nuevo: ")
-    bandera1 = False
-    while bandera1 != True:
-        if nuevo_codigo in codigo:
-            nuevo_codigo = pedir_entero("El codigo ya esta asignado a otro estudiante, porfavor ingrese otro número: ")
-        else:
-            codigo.append(nuevo_codigo)
-            bandera1 = True
+    while nuevo_codigo in codigo:
+        nuevo_codigo = pedir_entero("El codigo ya esta asignado a otro estudiante, porfavor ingrese otro número: ")
+    codigo.append(nuevo_codigo)
     nuevo_nombre = input("Ingrese el nombre del estudiante nuevo: ")
     nombre.append(nuevo_nombre)
     nuevo_edad = pedir_entero("Ingrese la edad del estudiante nuevo: ")
@@ -152,13 +188,14 @@ def alta_estudiantes(codigo, nombre, edad, age):
         nuevo_edad = pedir_entero("Edad invalida, ingrese nuevamente la edad (17-99): ")
     edad.append(nuevo_edad)
     nuevo_age = pedir_entero("Ingrese el año de cursada del estudiante nuevo: ")
-    while nuevo_age < 1  or nuevo_age > 9:
+    while nuevo_age < 1 or nuevo_age > 9:
         nuevo_age = pedir_entero("Año de cursada invalido, ingrese nuevamente (1-9): ")
     age.append(nuevo_age)
-    print("El estudiante",nuevo_nombre,nuevo_codigo,"a sido dado de alta correctamente")
+    nuevo_correo = pedir_email("Ingrese el correo electronico del estudiante nuevo: ")
+    correo.append(nuevo_correo)
+    print("El estudiante", nuevo_nombre, nuevo_codigo, "a sido dado de alta correctamente")
 
-#FUNCION DE BAJA ESTUDIANTES
-def baja_estudiantes(codigos, nombres, edades, ages, calificaciones):
+def baja_estudiantes(codigos, nombres, edades, ages, correos, calificaciones):
     codigo = pedir_entero("Ingrese el código del estudiante a eliminar: ")
     if codigo in codigos:
         pos = buscar_en_listas_secuencial(codigos, codigo)
@@ -170,17 +207,16 @@ def baja_estudiantes(codigos, nombres, edades, ages, calificaciones):
             nombres.pop(pos)
             edades.pop(pos)
             ages.pop(pos)
+            correos.pop(pos)
             print("Estudiante eliminado correctamente.")
     else:
         print("Código de estudiante no encontrado.")
 
-#FUNCION DE MODIFICACION ESTUDIANTES
-# Usa busqueda binaria: primero ordena por codigo, busca, luego restaura el orden original por codigo
-def modificacion_estudiantes(codigos, nombres, edades, ages):
+# Usa busqueda binaria: primero ordena por codigo, busca, luego el orden queda por codigo
+def modificacion_estudiantes(codigos, nombres, edades, ages, correos):
     codigo = pedir_entero("Ingrese el código del estudiante que desea modificar: ")
     if codigo in codigos:
-        # Ordenar por codigo antes de usar busqueda binaria
-        ordenar_estudiantes_por_codigo(codigos, nombres, edades, ages)
+        ordenar_estudiantes_por_codigo(codigos, nombres, edades, ages, correos)
         pos = buscar_en_listas_binaria(codigos, codigo)
         nombres[pos] = input("Ingrese nuevo nombre: ")
         edad = pedir_entero("Ingrese nueva edad: ")
@@ -191,27 +227,25 @@ def modificacion_estudiantes(codigos, nombres, edades, ages):
         while anio < 1 or anio > 9:
             anio = pedir_entero("Año invalido. Ingrese nuevo año de cursada: ")
         ages[pos] = anio
+        correos[pos] = pedir_email("Ingrese nuevo correo electronico: ")
         print("Estudiante modificado correctamente.")
     else:
         print("El estudiante no existe.")
 
-#FUNCION DE LISTADO DE ESTUDIANTES
-def listado_estudiantes(codigos, nombres, edades, ages):
+def listado_estudiantes(codigos, nombres, edades, ages, correos):
     for i in range(len(codigos)):
-        print("Codigo:", codigos[i], "-Nombre:", nombres[i], "-Edad:", edades[i], "- Año:", ages[i])
+        print("Codigo:", codigos[i], "-Nombre:", nombres[i], "-Edad:", edades[i], "- Año:", ages[i],
+              "- Correo:", correos[i], "- Dominio:", extraer_dominio(correos[i]))
 
+# ============================================================
+# FUNCIONES MATERIAS
+# ============================================================
 
-#FUNCIONES MATERIAS
-#FUNCION DE ALTA MATERIAS
 def alta_materias(codigo, nombre, cuatrimestre, carga_horaria):
     nuevo_codigo = pedir_entero("Ingrese el codigo de la materia nueva: ")
-    bandera1 = False
-    while bandera1 != True:
-        if nuevo_codigo in codigo:
-            nuevo_codigo = pedir_entero("El codigo ya esta asignado a otra materia, porfavor ingrese otro número: ")
-        else:
-            codigo.append(nuevo_codigo)
-            bandera1 = True
+    while nuevo_codigo in codigo:
+        nuevo_codigo = pedir_entero("El codigo ya esta asignado a otra materia, porfavor ingrese otro número: ")
+    codigo.append(nuevo_codigo)
     nuevo_nombre = input("Ingrese el nombre de la materia nueva: ")
     nombre.append(nuevo_nombre)
     nuevo_cuatri = pedir_entero("Ingrese el cuatrimestre nuevo: ")
@@ -224,26 +258,26 @@ def alta_materias(codigo, nombre, cuatrimestre, carga_horaria):
         print("Carga horaria invalida")
         nuevo_carga = pedir_entero("Ingrese carga horaria: ")
     carga_horaria.append(nuevo_carga)
-    print("La materia",nuevo_nombre,nuevo_codigo," a sido dada de alta correctamente")
+    print("La materia", nuevo_nombre, nuevo_codigo, "a sido dada de alta correctamente")
 
-#FUNCION DE BAJA MATERIAS
-def baja_materias(codigos, nombres, cuatrimestre, carga_horaria, codigos_materias_calif):
+# Si la materia tiene calificaciones asociadas, ofrece eliminarlas en cascada (con confirmacion)
+def baja_materias(codigos, nombres, cuatrimestre, carga_horaria, codigos_calif, est_calif, mat_calif, notas, condiciones):
     codigo = pedir_entero("Ingrese el código de la materia a eliminar: ")
-    if codigo in codigos:
-        pos = buscar_en_listas_secuencial(codigos, codigo)
-        pos_calificacion = buscar_en_listas_secuencial(codigos_materias_calif, codigo)
-        if pos_calificacion != -1:
-            print("No se puede eliminar porque tiene calificaciones asociadas")
-        else:
-            codigos.pop(pos)
-            nombres.pop(pos)
-            cuatrimestre.pop(pos)
-            carga_horaria.pop(pos)
-            print("Materia dada de baja correctamente.")
-    else:
+    if codigo not in codigos:
         print("Código de materia no encontrado.")
+        return
+    pos = buscar_en_listas_secuencial(codigos, codigo)
+    if buscar_en_listas_secuencial(mat_calif, codigo) != -1:
+        print("No se puede eliminar porque tiene calificaciones asociadas")
+        vaciar_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones)
+        if buscar_en_listas_secuencial(mat_calif, codigo) != -1:
+            return
+    codigos.pop(pos)
+    nombres.pop(pos)
+    cuatrimestre.pop(pos)
+    carga_horaria.pop(pos)
+    print("Materia dada de baja correctamente.")
 
-#FUNCION DE MODIFICACIONES MATERIAS
 def modificacion_materias(codigos, nombres, cuatrimestre, carga_horaria):
     codigo = pedir_entero("Ingrese el código de la materia que desea modificar: ")
     if codigo in codigos:
@@ -261,23 +295,20 @@ def modificacion_materias(codigos, nombres, cuatrimestre, carga_horaria):
     else:
         print("La materia no existe")
 
-#FUNCIONES DE LISTADO DE MATERIAS
 def listado_materias(codigos, nombres, cuatrimestre, carga_horaria):
     for i in range(len(codigos)):
-        print("Codigo:", codigos[i], "-Nombre:", nombres[i], "-Cuatrimestre:", cuatrimestre[i], "-Carga horaria:", carga_horaria[i])
+        print("Codigo:", codigos[i], "-Nombre:", nombres[i], "-Cuatrimestre:", cuatrimestre[i],
+              "-Carga horaria:", carga_horaria[i])
 
+# ============================================================
+# FUNCIONES CALIFICACIONES
+# ============================================================
 
-#FUNCIONES CALIFICACIONES
-#FUNCION DE ALTA CALIFICACIONES
 def alta_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones, codigos_estudiantes, codigos_materias):
     nuevo_codigo = pedir_entero("Ingrese el código de la calificación nueva: ")
-    bandera = False
-    while bandera != True:
-        if nuevo_codigo in codigos_calif:
-            nuevo_codigo = pedir_entero("El código ya existe, ingrese otro: ")
-        else:
-            codigos_calif.append(nuevo_codigo)
-            bandera = True
+    while nuevo_codigo in codigos_calif:
+        nuevo_codigo = pedir_entero("El código ya existe, ingrese otro: ")
+    codigos_calif.append(nuevo_codigo)
     codigo_est = pedir_entero("Ingrese el código del estudiante: ")
     while codigo_est not in codigos_estudiantes:
         codigo_est = pedir_entero("Ese estudiante no existe. Ingréselo de nuevo: ")
@@ -296,7 +327,6 @@ def alta_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones,
     condiciones.append(condicion)
     print("La calificación", nuevo_codigo, "fue dada de alta correctamente")
 
-#FUNCION DE BAJA CALIFICACIONES
 def baja_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones):
     codigo = pedir_entero("Ingrese el código de la calificación a eliminar: ")
     if codigo in codigos_calif:
@@ -310,7 +340,18 @@ def baja_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones)
     else:
         print("Código de calificación no encontrado.")
 
-#FUNCION DE MODIFICACION CALIFICACIONES
+def vaciar_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones):
+    confirmacion = input("Para eliminar la materia se deben eliminar las calificaciones, desea eliminar todas las calificaciones? (si/no): ")
+    if confirmacion == "si":
+        codigos_calif.clear()
+        est_calif.clear()
+        mat_calif.clear()
+        notas.clear()
+        condiciones.clear()
+        print("Todas las calificaciones fueron eliminadas.")
+    else:
+        print("No se eliminaron las calificaciones.")
+
 def modificacion_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones, codigos_estudiantes, codigos_materias):
     codigo = pedir_entero("Ingrese el código de la calificación que desea modificar: ")
     if codigo in codigos_calif:
@@ -335,41 +376,33 @@ def modificacion_calificaciones(codigos_calif, est_calif, mat_calif, notas, cond
     else:
         print("Código de calificación no encontrado.")
 
-#FUNCION DE LISTADO CALIFICACIONES
 def listado_calificaciones(codigos_calif, est_calif, mat_calif, notas, condiciones):
     for i in range(len(codigos_calif)):
         print("Codigo:", codigos_calif[i], "- Estudiante:", est_calif[i],
               "- Materia:", mat_calif[i], "- Nota:", notas[i], "- Condición:", condiciones[i])
 
+# ============================================================
+# LOGIN Y MENUS
+# ============================================================
 
-# Login
-print("---Sistema de calificaciones---")
-print("    --Inicio de sesión--       ")
-# INICIO FUNCION LOGIN
 def login():
-#Datos
     usuarios_validos = "admin"
     contrasenas_validas = "admin"
     intentos = 3
     ingreso_correcto = False
-
-# Ciclo de validación o no
     while ingreso_correcto == False and intentos > 0:
-            usuario = input("Ingrese su usuario: ")
-            contrasena = input("Ingrese su contraseña: ")
-
-            if usuario == usuarios_validos and contrasena == contrasenas_validas:
-                print("---Inicio de sesión valido---")
-                ingreso_correcto = True
-            else:
-                intentos = intentos - 1
-                print("-Inicio de sesión invalido, te quedan", intentos,"intentos-")
+        usuario = input("Ingrese su usuario: ")
+        contrasena = input("Ingrese su contraseña: ")
+        if usuario == usuarios_validos and contrasena == contrasenas_validas:
+            print("---Inicio de sesión valido---")
+            ingreso_correcto = True
+        else:
+            intentos = intentos - 1
+            print("-Inicio de sesión invalido, te quedan", intentos, "intentos-")
     return ingreso_correcto
-# FIN FUNCION LOGIN
 
-# INICIO FUNCION SUBMENU ESTUDIANTES
 def submenu1():
-    salida_submenu1 = False  #Bandera para salir del programa
+    salida_submenu1 = False
     while salida_submenu1 == False:
         print("---Submenu de estudiantes ---")
         print("1. Alta")
@@ -378,29 +411,25 @@ def submenu1():
         print("4. Listado")
         print("5. Listado ordenado por edad")
         print("0. Volver atras")
-
         opcion = pedir_entero("Elije una opción: ")
-
         if opcion == 1:
-            alta_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada)
+            alta_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada, correos_estudiantes)
         elif opcion == 2:
-            baja_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada, codigos_estudiantes_calif)
+            baja_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada, correos_estudiantes, codigos_estudiantes_calif)
         elif opcion == 3:
-            modificacion_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada)
+            modificacion_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada, correos_estudiantes)
         elif opcion == 4:
-            listado_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada)
+            listado_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada, correos_estudiantes)
         elif opcion == 5:
-            ordenar_estudiantes_por_edad(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada)
-            listado_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada)
+            ordenar_estudiantes_por_edad(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada, correos_estudiantes)
+            listado_estudiantes(codigos_estudiantes, nombres_estudiantes, edades_estudiantes, ages_cursada, correos_estudiantes)
         elif opcion == 0:
             salida_submenu1 = True
         else:
             print("Opcion no valida, vuelva a elegir")
-# FIN FUNCION SUBMENU ESTUDIANTES
 
-# INICIO SUBMENU MATERIAS
 def submenu2():
-    salida_submenu2 = False  #Bandera para salir del programa
+    salida_submenu2 = False
     while salida_submenu2 == False:
         print("---Submenu de materias---")
         print("1. Alta")
@@ -409,13 +438,11 @@ def submenu2():
         print("4. Listado")
         print("5. Listado ordenado por cuatrimestre")
         print("0. Volver atras")
-
         opcion = pedir_entero("Elije una opción: ")
-
         if opcion == 1:
             alta_materias(codigos_materias, nombres_materias, cuatrimestres, cargas_horarias)
         elif opcion == 2:
-            baja_materias(codigos_materias, nombres_materias, cuatrimestres, cargas_horarias, codigos_materias_calif)
+            baja_materias(codigos_materias, nombres_materias, cuatrimestres, cargas_horarias, codigos_calificaciones, codigos_estudiantes_calif, codigos_materias_calif, notas, condiciones)
         elif opcion == 3:
             modificacion_materias(codigos_materias, nombres_materias, cuatrimestres, cargas_horarias)
         elif opcion == 4:
@@ -427,11 +454,9 @@ def submenu2():
             salida_submenu2 = True
         else:
             print("Opcion no valida, vuelva a elegir")
-# FIN FUNCION SUBMENU MATERIAS
 
-# INICIO FUNCION SUBMENU CALIFICACIONES
 def submenu3():
-    salida_submenu3 = False  #Bandera para salir del programa
+    salida_submenu3 = False
     while salida_submenu3 == False:
         print("---Submenu de calificaciones---")
         print("1. Alta")
@@ -439,11 +464,11 @@ def submenu3():
         print("3. Modificación")
         print("4. Listado")
         print("5. Listado ordenado por nota")
-        print("6. Estadística")
+        print("6. Estadística por materia")
+        print("7. Matriz de notas (Estudiantes x Materias)")
+        print("8. Estadísticas con funciones lambda (map/filter/reduce)")
         print("0. Volver atras")
-
         opcion = pedir_entero("Elije una opción: ")
-
         if opcion == 1:
             alta_calificaciones(codigos_calificaciones, codigos_estudiantes_calif, codigos_materias_calif, notas, condiciones, codigos_estudiantes, codigos_materias)
         elif opcion == 2:
@@ -457,24 +482,24 @@ def submenu3():
             listado_calificaciones(codigos_calificaciones, codigos_estudiantes_calif, codigos_materias_calif, notas, condiciones)
         elif opcion == 6:
             informe_aprobados_por_materia()
+        elif opcion == 7:
+            informe_matriz_notas()
+        elif opcion == 8:
+            estadisticas_con_lambda(notas, condiciones, nombres_estudiantes)
         elif opcion == 0:
             salida_submenu3 = True
         else:
             print("Opcion no valida, vuelva a elegir")
-# FIN FUNCION SUBMENU CALIFICACIONES
 
-# INICIO FUNCION MENU PRINCIPAL
 def menu_principal():
-    salida_menu = False  #Bandera para salir del programa
+    salida_menu = False
     while salida_menu == False:
         print("---Bienvenido al menú principal---")
         print("1. Estudiantes")
         print("2. Materias")
         print("3. Calificaciones")
         print("0. Cerrar sesión")
-
         opcion = pedir_entero("Seleccione una opción: ")
-
         if opcion == 1:
             submenu1()
         elif opcion == 2:
@@ -486,14 +511,14 @@ def menu_principal():
             salida_menu = True
         else:
             print("Opcion no valida, porfavor elija nuevamente")
-# FIN FUNCION MENU PRINCIPAL
 
-# ===== MATRIZ Y ESTADISTICAS =====
+# ============================================================
+# MATRICES Y ESTADISTICAS
+# ============================================================
 
+# map + lambda + zip: arma la matriz [codigo_calif, codigo_materia, condicion] sin loop manual
 def listas_a_matriz(lista1, lista2, lista3):
-    matriz = []
-    for i in range(len(lista1)):
-        matriz.append([lista1[i], lista2[i], lista3[i]])
+    matriz = list(map(lambda fila: [fila[0], fila[1], fila[2]], zip(lista1, lista2, lista3)))
     return matriz
 
 def conservar_unicos(matriz):
@@ -503,26 +528,19 @@ def conservar_unicos(matriz):
             unicos.append(fila[1])
     return unicos
 
-def obtener_aprobados_materia(materias, condiciones, materia):
-    cont = 0
-    for i in range(len(materias)):
-        if materias[i] == materia and condiciones[i] != 3:
-            cont += 1
-    return cont
-
-def obtener_desaprobados_materia(materias, condiciones, materia):
-    cont = 0
-    for i in range(len(materias)):
-        if materias[i] == materia and condiciones[i] == 3:
-            cont += 1
-    return cont
-
+# Recorre las calificaciones UNA SOLA VEZ (no una pasada completa por cada materia) y
+# acumula aprobados/desaprobados de todas las materias en simultaneo.
 def armar_matriz_estadisticas(materias_unicas):
-    matriz = []
-    for mat in materias_unicas:
-        aprob = obtener_aprobados_materia(codigos_materias_calif, condiciones, mat)
-        desap = obtener_desaprobados_materia(codigos_materias_calif, condiciones, mat)
-        matriz.append([mat, aprob, desap])
+    aprobados = [0] * len(materias_unicas)
+    desaprobados = [0] * len(materias_unicas)
+    for i in range(len(codigos_materias_calif)):
+        pos = buscar_en_listas_secuencial(materias_unicas, codigos_materias_calif[i])
+        if pos != -1:
+            if condiciones[i] != 3:
+                aprobados[pos] += 1
+            else:
+                desaprobados[pos] += 1
+    matriz = list(map(lambda idx: [materias_unicas[idx], aprobados[idx], desaprobados[idx]], range(len(materias_unicas))))
     return matriz
 
 def obtener_nombre_materia(codigo):
@@ -535,24 +553,69 @@ def informe_aprobados_por_materia():
     matriz = listas_a_matriz(codigos_calificaciones, codigos_materias_calif, condiciones)
     materias_unicas = conservar_unicos(matriz)
     matriz_est = armar_matriz_estadisticas(materias_unicas)
-
     print("\n--- ESTADISTICA POR MATERIA ---")
     print("Materia             | Aprob | Desap | % Aprob")
-
     for fila in matriz_est:
         nombre = obtener_nombre_materia(fila[0])
         aprob = fila[1]
         desap = fila[2]
         total = aprob + desap
-
         porcentaje = (aprob * 100 / total) if total > 0 else 0
-
         print(f"{nombre:20} | {aprob:^5} | {desap:^5} | {porcentaje:6.2f}%")
 
-# INICIO DE PROGRAMA
-inicio_de_sesion = login()
+# FUNCION QUE IMPRIME LA MATRIZ DE NOTAS CON ENCABEZADOS
+def imprimir_matriz_notas(matriz, nombres_est, nombres_mat):
+    print("Materias:", nombres_mat)
+    for i in range(len(matriz)):
+        print("Estudiante:", nombres_est[i])
+        for j in range(len(matriz[i])):
+            print("   ", nombres_mat[j], "-", matriz[i][j])
 
-if inicio_de_sesion == True:
-    menu_principal()
-else:
-    print("Por seguridad se bloqueo el acceso")
+# Arma una matriz (lista bidimensional) de notas: filas=estudiantes, columnas=materias
+def armar_matriz_notas(codigos_est, codigos_mat, est_calif, mat_calif, notas):
+    matriz = []
+    for i in range(len(codigos_est)):
+        fila = []
+        for j in range(len(codigos_mat)):
+            nota_encontrada = "-"
+            for k in range(len(est_calif)):
+                if est_calif[k] == codigos_est[i] and mat_calif[k] == codigos_mat[j]:
+                    nota_encontrada = notas[k]
+            fila.append(nota_encontrada)
+        matriz.append(fila)
+    return matriz
+
+def informe_matriz_notas():
+    matriz = armar_matriz_notas(codigos_estudiantes, codigos_materias, codigos_estudiantes_calif, codigos_materias_calif, notas)
+    print("\n--- MATRIZ DE NOTAS (Estudiantes x Materias) ---")
+    imprimir_matriz_notas(matriz, nombres_estudiantes, nombres_materias)
+
+# Demostracion explicita de map / filter / reduce con funciones lambda sobre las notas
+def estadisticas_con_lambda(notas, condiciones, nombres_estudiantes):
+    if len(notas) == 0:
+        print("No hay calificaciones cargadas.")
+        return
+    notas_sobre_100 = list(map(lambda n: n * 10, notas))
+    indices_aprobados = list(filter(lambda i: condiciones[i] != 3, range(len(condiciones))))
+    notas_aprobados = list(map(lambda i: notas[i], indices_aprobados))
+    suma_total = reduce(lambda acumulado, n: acumulado + n, notas, 0)
+    promedio_general = suma_total / len(notas)
+    print("\n--- ESTADISTICAS CON FUNCIONES LAMBDA ---")
+    print("Notas originales:", notas)
+    print("Notas escaladas sobre 100 (map):", notas_sobre_100)
+    print("Notas de aprobados (filter):", notas_aprobados)
+    print("Promedio general de notas (reduce):", promedio_general)
+
+# ============================================================
+# INICIO DE PROGRAMA
+# ============================================================
+
+if __name__ == "__main__":
+    print("---Sistema de calificaciones---")
+    print("    --Inicio de sesión--       ")
+    inicio_de_sesion = login()
+    if inicio_de_sesion == True:
+        menu_principal()
+    else:
+        print("Por seguridad se bloqueo el acceso")
+
