@@ -613,8 +613,8 @@ def estadisticas_con_lambda(notas, condiciones, nombres_estudiantes):
 print("---Sistema de calificaciones---")
 print("    --Inicio de sesión--       ")
 inicio_de_sesion = login()
-    if inicio_de_sesion == True:
-        menu_principal()
-    else:
-        print("Por seguridad se bloqueo el acceso")
+if inicio_de_sesion == True:
+    menu_principal()
+else:
+    print("Por seguridad se bloqueo el acceso")
 
