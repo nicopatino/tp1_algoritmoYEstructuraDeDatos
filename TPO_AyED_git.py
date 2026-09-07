@@ -610,9 +610,9 @@ def estadisticas_con_lambda(notas, condiciones, nombres_estudiantes):
 # INICIO DE PROGRAMA
 # ============================================================
     
-    print("---Sistema de calificaciones---")
-    print("    --Inicio de sesión--       ")
-    inicio_de_sesion = login()
+print("---Sistema de calificaciones---")
+print("    --Inicio de sesión--       ")
+inicio_de_sesion = login()
     if inicio_de_sesion == True:
         menu_principal()
     else:
