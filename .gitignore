@@ -1,0 +1,12 @@
+# Archivos que genera el programa al ejecutarse (no se versionan)
+datos_sistema.json
+datos_sistema.json.bak
+log_operaciones.txt
+
+# Archivos temporales de las pruebas unitarias
+prueba_*.json
+prueba_*.txt
+
+# Python
+__pycache__/
+*.pyc
