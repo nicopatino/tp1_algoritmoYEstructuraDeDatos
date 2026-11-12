@@ -27,23 +27,20 @@ El menú principal guarda los cambios al volver de los submenús. Los archivos `
 | `menu_principal.py` | Inicio del sistema, menú principal, consultas e informes; coordina el guardado al volver de los submenús. |
 | `materias.py` | Altas, bajas, modificaciones, búsqueda, listados y ordenamiento de materias. Rechaza la baja si existen calificaciones asociadas. |
 | `calificaciones.py` | Gestión de actas como tuplas, validaciones, búsqueda, listados, promedios, materias sin calificaciones, recursividad y exportación TXT/CSV. |
-| `TPO_PROGRAMACION_1_GESTION_ACADEMICA.py` | Código de la primera entrega, conservado como referencia; no es el punto de entrada de la versión actual. |
 
 El submenú de Estudiantes en `menu_principal.py` todavía está pendiente de integración.
 
 ## Pruebas
 
-Desde la raíz, ejecutá la suite `unittest`:
-
-```bash
-python -m unittest discover -v
-```
-
-Este comando descubre las pruebas de `test_materias.py` y `test_calificaciones.py`. Los otros dos archivos mantienen pruebas con funciones `correr_pruebas()` y se ejecutan directamente:
+Las pruebas se implementan como funciones y se ejecutan directamente desde la carpeta raíz:
 
 ```bash
 python test_base_comun.py
 python test_persistencia.py
+python test_materias.py
+python test_calificaciones.py
 ```
+
+`test_materias.py` y `test_calificaciones.py` informan los resultados de sus casos y resumen cuántas pruebas aprobaron o fallaron. `python -m unittest discover -v` no descubre pruebas en la configuración actual.
 
 `test_persistencia.py` crea archivos `prueba_*.json` y `prueba_*.txt` en el directorio de trabajo; esos nombres están excluidos en `.gitignore`.
