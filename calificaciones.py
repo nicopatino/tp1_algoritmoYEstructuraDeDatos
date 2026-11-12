@@ -1,7 +1,5 @@
 """Operaciones y submenú para la gestión de calificaciones."""
 
-import csv
-
 from base_comun import (
 	CONDICIONES,
 	NOTA_APROBACION,
@@ -231,6 +229,14 @@ def mostrar_calificaciones_ordenadas(calificaciones, estudiantes, materias):
 		))
 
 
+def escapar_campo_csv(valor):
+	"""Escapar un campo CSV duplicando comillas y entrecomillando delimitadores."""
+	texto = str(valor)
+	if "," in texto or '"' in texto or "\r" in texto or "\n" in texto:
+		return '"' + texto.replace('"', '""') + '"'
+	return texto
+
+
 def exportar_acta(calificaciones, estudiantes, materias, ruta, formato="txt"):
 	"""Exportar actas a TXT tabulado o CSV utilizando únicamente la biblioteca estándar."""
 	formato = formato.lower()
@@ -250,8 +256,9 @@ def exportar_acta(calificaciones, estudiantes, materias, ruta, formato="txt"):
 		))
 	with open(ruta, "w", encoding="utf-8", newline="") as archivo:
 		if formato == "csv":
-			escritor = csv.writer(archivo)
-			escritor.writerows(filas)
+			for fila in filas:
+				campos = [escapar_campo_csv(valor) for valor in fila]
+				archivo.write(",".join(campos) + "\r\n")
 		else:
 			for fila in filas:
 				archivo.write("\t".join(str(valor) for valor in fila) + "\n")

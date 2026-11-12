@@ -1,7 +1,4 @@
-"""Pruebas unitarias aisladas para el módulo de materias."""
-
-from copy import deepcopy
-import unittest
+"""Pruebas funcionales aisladas para las operaciones del módulo materias."""
 
 from materias import (
 	actualizar_materia,
@@ -12,123 +9,236 @@ from materias import (
 )
 
 
-class PruebasMaterias(unittest.TestCase):
-	"""Probar operaciones de materias con datos locales a cada prueba."""
+def crear_datos_prueba():
+	"""Crear diccionarios nuevos para una prueba independiente."""
+	materias = {
+		200: {"nombre": "Álgebra", "cuatrimestre": 2, "carga_horaria": 4},
+		201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6},
+	}
+	return materias, {}
 
-	def setUp(self):
-		"""Crear diccionarios independientes, sin usar datos del sistema."""
-		self.materias = {
-			200: {"nombre": "Álgebra", "cuatrimestre": 2, "carga_horaria": 4},
-			201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6},
-		}
-		self.calificaciones = {}
 
-	def test_alta_correcta_de_materia(self):
-		"""El alta guarda todos los campos y devuelve el código asignado."""
-		codigo = crear_materia(self.materias, 202, "Estadística", 1, 5)
+def copiar_materias(materias):
+	"""Copiar manualmente el diccionario y cada registro de materia."""
+	return {codigo: dict(datos) for codigo, datos in materias.items()}
 
-		self.assertEqual(codigo, 202)
-		self.assertEqual(self.materias[202], {
-			"nombre": "Estadística",
-			"cuatrimestre": 1,
-			"carga_horaria": 5,
-		})
 
-	def test_rechazar_codigo_duplicado(self):
-		"""Un código existente no puede volver a darse de alta."""
-		with self.assertRaises(ValueError):
-			crear_materia(self.materias, 200, "Materia duplicada", 1, 4)
+def copiar_calificaciones(calificaciones):
+	"""Copiar los registros históricos dict y conservar las tuplas inmutables."""
+	return {
+		codigo: dict(acta) if isinstance(acta, dict) else acta
+		for codigo, acta in calificaciones.items()
+	}
 
-	def test_rechazar_cuatrimestre_y_carga_fuera_de_rango(self):
-		"""Los cuatrimestres y las cargas horarias deben respetar sus límites."""
-		casos_invalidos = ((0, 4), (3, 4), (1, 0), (1, 21))
-		for indice, (cuatrimestre, carga_horaria) in enumerate(casos_invalidos):
-			with self.subTest(cuatrimestre=cuatrimestre, carga_horaria=carga_horaria):
-				with self.assertRaises(ValueError):
-					crear_materia(
-						self.materias,
-						300 + indice,
-					"Materia de prueba",
-					cuatrimestre,
-					carga_horaria,
-					)
 
-	def test_modificacion_correcta_de_materia(self):
-		"""La modificación actualiza nombre, cuatrimestre y carga horaria."""
-		actualizar_materia(self.materias, 200, "Álgebra II", 1, 8)
+def probar_alta_correcta():
+	"""Dar de alta una materia y devolver código y registro obtenidos."""
+	materias, calificaciones = crear_datos_prueba()
+	codigo = crear_materia(materias, 202, "Estadística", 1, 5)
+	return codigo, materias.get(202)
 
-		self.assertEqual(self.materias[200], {
-			"nombre": "Álgebra II",
-			"cuatrimestre": 1,
-			"carga_horaria": 8,
-		})
 
-	def test_buscar_materia_inexistente(self):
-		"""La búsqueda de un código válido pero ausente lanza KeyError."""
-		with self.assertRaises(KeyError):
-			buscar_materia(self.materias, 999)
+def probar_codigo_duplicado():
+	"""Intentar dar de alta un código de materia existente."""
+	materias, calificaciones = crear_datos_prueba()
+	return crear_materia(materias, 200, "Materia duplicada", 1, 4)
 
-	def test_baja_correcta_sin_calificaciones(self):
-		"""Una materia sin actas asociadas se elimina del diccionario."""
-		calificaciones_antes = deepcopy(self.calificaciones)
-		otras_materias_antes = deepcopy(self.materias)
-		del otras_materias_antes[200]
 
-		eliminar_materia(self.materias, self.calificaciones, 200)
+def probar_rangos_invalidos(cuatrimestre, carga_horaria):
+	"""Intentar crear una materia con cuatrimestre o carga fuera de rango."""
+	materias, calificaciones = crear_datos_prueba()
+	return crear_materia(materias, 300, "Materia de prueba", cuatrimestre, carga_horaria)
 
-		self.assertEqual(self.materias, otras_materias_antes)
-		self.assertEqual(self.calificaciones, calificaciones_antes)
 
-	def test_rechazar_baja_con_diccionario_historico(self):
-		"""Rechazar la baja con actas históricas sin modificar ningún dato."""
-		self.calificaciones[1] = {
-			"estudiante": 100,
-			"materia": 200,
-			"nota": 8,
-			"condicion": 1,
-		}
-		materias_antes = deepcopy(self.materias)
-		calificaciones_antes = deepcopy(self.calificaciones)
+def probar_modificacion_correcta():
+	"""Modificar todos los campos de una materia existente."""
+	materias, calificaciones = crear_datos_prueba()
+	actualizar_materia(materias, 200, "Álgebra II", 1, 8)
+	return materias[200]
 
-		with self.assertRaises(ValueError):
-			eliminar_materia(self.materias, self.calificaciones, 200)
 
-		self.assertEqual(self.materias, materias_antes)
-		self.assertEqual(self.calificaciones, calificaciones_antes)
+def probar_busqueda_inexistente():
+	"""Buscar un código válido que no está en el diccionario."""
+	materias, calificaciones = crear_datos_prueba()
+	return buscar_materia(materias, 999)
 
-	def test_rechazar_baja_con_tupla(self):
-		"""Rechazar la baja con un acta tuple sin modificar ningún dato."""
-		self.calificaciones[1] = (1, 100, 200, 8, 1)
-		materias_antes = deepcopy(self.materias)
-		calificaciones_antes = deepcopy(self.calificaciones)
 
-		with self.assertRaises(ValueError):
-			eliminar_materia(self.materias, self.calificaciones, 200)
+def probar_baja_sin_calificaciones():
+	"""Eliminar una materia sin actas y conservar intacto el diccionario de actas."""
+	materias, calificaciones = crear_datos_prueba()
+	calificaciones_antes = copiar_calificaciones(calificaciones)
+	otras_materias_antes = copiar_materias(materias)
+	del otras_materias_antes[200]
+	eliminar_materia(materias, calificaciones, 200)
+	return materias, calificaciones, calificaciones_antes, otras_materias_antes
 
-		self.assertEqual(self.materias, materias_antes)
-		self.assertEqual(self.calificaciones, calificaciones_antes)
 
-	def test_rechazar_baja_con_formato_desconocido(self):
-		"""Bloquear la baja si no se puede determinar la materia de un acta."""
-		self.calificaciones[1] = "registro no reconocido"
-		materias_antes = deepcopy(self.materias)
-		calificaciones_antes = deepcopy(self.calificaciones)
+def probar_baja_con_diccionario_historico():
+	"""Rechazar la baja cuando una acta histórica refiere a la materia."""
+	materias, calificaciones = crear_datos_prueba()
+	calificaciones[1] = {
+		"estudiante": 100,
+		"materia": 200,
+		"nota": 8,
+		"condicion": 1,
+	}
+	materias_antes = copiar_materias(materias)
+	calificaciones_antes = copiar_calificaciones(calificaciones)
+	try:
+		eliminar_materia(materias, calificaciones, 200)
+	except ValueError:
+		return materias, calificaciones, materias_antes, calificaciones_antes
+	raise AssertionError("La baja no rechazó la materia con acta histórica")
 
-		with self.assertRaises(ValueError):
-			eliminar_materia(self.materias, self.calificaciones, 200)
 
-		self.assertEqual(self.materias, materias_antes)
-		self.assertEqual(self.calificaciones, calificaciones_antes)
+def probar_baja_con_tupla():
+	"""Rechazar la baja cuando una acta tuple refiere a la materia."""
+	materias, calificaciones = crear_datos_prueba()
+	calificaciones[1] = (1, 100, 200, 8, 1)
+	materias_antes = copiar_materias(materias)
+	calificaciones_antes = copiar_calificaciones(calificaciones)
+	try:
+		eliminar_materia(materias, calificaciones, 200)
+	except ValueError:
+		return materias, calificaciones, materias_antes, calificaciones_antes
+	raise AssertionError("La baja no rechazó la materia con acta tuple")
 
-	def test_ordenar_por_cuatrimestre_y_codigo(self):
-		"""El orden agrupa por cuatrimestre y desempata por código."""
-		crear_materia(self.materias, 202, "Cálculo", 1, 4)
 
-		ordenadas = ordenar_materias_por_cuatrimestre(self.materias)
+def probar_baja_con_formato_desconocido():
+	"""Bloquear la baja si el formato de un acta no puede interpretarse."""
+	materias, calificaciones = crear_datos_prueba()
+	calificaciones[1] = "registro no reconocido"
+	materias_antes = copiar_materias(materias)
+	calificaciones_antes = copiar_calificaciones(calificaciones)
+	try:
+		eliminar_materia(materias, calificaciones, 200)
+	except ValueError:
+		return materias, calificaciones, materias_antes, calificaciones_antes
+	raise AssertionError("La baja no rechazó el formato desconocido")
 
-		self.assertEqual([codigo for codigo, materia in ordenadas], [201, 202, 200])
-		self.assertEqual([materia["cuatrimestre"] for codigo, materia in ordenadas], [1, 1, 2])
+
+def probar_ordenamiento():
+	"""Ordenar materias por cuatrimestre y código ascendente."""
+	materias, calificaciones = crear_datos_prueba()
+	crear_materia(materias, 202, "Cálculo", 1, 4)
+	ordenadas = ordenar_materias_por_cuatrimestre(materias)
+	return (
+		[codigo for codigo, materia in ordenadas],
+		[materia["cuatrimestre"] for codigo, materia in ordenadas],
+	)
+
+
+def ejecutar_prueba(numero, funcion, datos, esperado, ejecutar):
+	"""Ejecutar y reportar una prueba, incluyendo excepciones inesperadas."""
+	try:
+		obtenido = ejecutar()
+		aprobada = obtenido == esperado
+		resultado_obtenido = obtenido
+	except Exception as error:
+		aprobada = esperado == type(error).__name__
+		resultado_obtenido = "{}: {}".format(type(error).__name__, error)
+	print("Prueba {}".format(numero))
+	print("  Función:  ", funcion)
+	print("  Datos:    ", datos)
+	print("  Esperado: ", esperado)
+	print("  Obtenido: ", resultado_obtenido)
+	print("  Resultado:", "APROBADA" if aprobada else "FALLIDA")
+	print()
+	return aprobada
+
+
+def correr_pruebas():
+	"""Ejecutar todos los casos y mostrar el resumen de aprobadas y fallidas."""
+	resultados = []
+	resultados.append(ejecutar_prueba(
+		1, "crear_materia", "código 202, Estadística, cuatrimestre 1, carga 5",
+		(202, {"nombre": "Estadística", "cuatrimestre": 1, "carga_horaria": 5}),
+		probar_alta_correcta,
+	))
+	resultados.append(ejecutar_prueba(
+		2, "crear_materia", "código existente 200",
+		"ValueError", probar_codigo_duplicado,
+	))
+
+	casos_invalidos = ((0, 4), (3, 4), (1, 0), (1, 21))
+	for indice, (cuatrimestre, carga_horaria) in enumerate(casos_invalidos, start=3):
+		resultados.append(ejecutar_prueba(
+			indice,
+			"crear_materia",
+			"cuatrimestre {}, carga horaria {}".format(cuatrimestre, carga_horaria),
+			"ValueError",
+			lambda cuatrimestre=cuatrimestre, carga_horaria=carga_horaria:
+				probar_rangos_invalidos(cuatrimestre, carga_horaria),
+		))
+
+	resultados.append(ejecutar_prueba(
+		7, "actualizar_materia", "código 200, Álgebra II, cuatrimestre 1, carga 8",
+		{"nombre": "Álgebra II", "cuatrimestre": 1, "carga_horaria": 8},
+		probar_modificacion_correcta,
+	))
+	resultados.append(ejecutar_prueba(
+		8, "buscar_materia", "código inexistente 999", "KeyError",
+		probar_busqueda_inexistente,
+	))
+	resultados.append(ejecutar_prueba(
+		9, "eliminar_materia", "código 200 sin actas",
+		(
+			{201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6}},
+			{},
+			{},
+			{201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6}},
+		),
+		probar_baja_sin_calificaciones,
+	))
+	resultados.append(ejecutar_prueba(
+		10, "eliminar_materia", "acta histórica dict asociada al código 200",
+		(
+			{200: {"nombre": "Álgebra", "cuatrimestre": 2, "carga_horaria": 4},
+			 201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6}},
+			{1: {"estudiante": 100, "materia": 200, "nota": 8, "condicion": 1}},
+			{200: {"nombre": "Álgebra", "cuatrimestre": 2, "carga_horaria": 4},
+			 201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6}},
+			{1: {"estudiante": 100, "materia": 200, "nota": 8, "condicion": 1}},
+		),
+		probar_baja_con_diccionario_historico,
+	))
+	resultados.append(ejecutar_prueba(
+		11, "eliminar_materia", "acta tuple (1, 100, 200, 8, 1)",
+		(
+			{200: {"nombre": "Álgebra", "cuatrimestre": 2, "carga_horaria": 4},
+			 201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6}},
+			{1: (1, 100, 200, 8, 1)},
+			{200: {"nombre": "Álgebra", "cuatrimestre": 2, "carga_horaria": 4},
+			 201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6}},
+			{1: (1, 100, 200, 8, 1)},
+		),
+		probar_baja_con_tupla,
+	))
+	resultados.append(ejecutar_prueba(
+		12, "eliminar_materia", "acta con formato desconocido",
+		(
+			{200: {"nombre": "Álgebra", "cuatrimestre": 2, "carga_horaria": 4},
+			 201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6}},
+			{1: "registro no reconocido"},
+			{200: {"nombre": "Álgebra", "cuatrimestre": 2, "carga_horaria": 4},
+			 201: {"nombre": "Programación", "cuatrimestre": 1, "carga_horaria": 6}},
+			{1: "registro no reconocido"},
+		),
+		probar_baja_con_formato_desconocido,
+	))
+	resultados.append(ejecutar_prueba(
+		13, "ordenar_materias_por_cuatrimestre", "cuatrimestres 1, 1, 2",
+		([201, 202, 200], [1, 1, 2]), probar_ordenamiento,
+	))
+
+	aprobadas = resultados.count(True)
+	fallidas = len(resultados) - aprobadas
+	print("RESUMEN: {} aprobadas, {} fallidas de {} pruebas".format(
+		aprobadas, fallidas, len(resultados)
+	))
+	return fallidas == 0
 
 
 if __name__ == "__main__":
-	unittest.main()
+	if not correr_pruebas():
+		raise SystemExit(1)
