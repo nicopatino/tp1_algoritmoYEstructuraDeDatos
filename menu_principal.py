@@ -10,16 +10,9 @@ from base_comun import (cargar_datos_iniciales, login, pedir_opcion, pedir_enter
                         condicion_a_texto, es_aprobada)
 from persistencia import (ARCHIVO_DATOS, guardar_datos_json, cargar_datos_json, respaldar_archivo,
                           detectar_calificaciones_huerfanas, registrar_operacion, leer_log, resumir_log)
+from persona_1_estudiantes import submenu_estudiantes
 from materias import submenu_materias
 from calificaciones import submenu_calificaciones as submenu_calificaciones_modulo
-
-
-# ------------------------------------------------------------
-# SUBMENUS DE P1 Y P2 (PENDIENTES DE INTEGRACION)
-# ------------------------------------------------------------
-
-def submenu_estudiantes(estudiantes, materias, calificaciones):
-    print("Submenú de estudiantes: pendiente de integración.")
 
 
 def obtener_campos_calificacion(calificacion):
@@ -200,7 +193,7 @@ def menu_principal(estudiantes, materias, calificaciones, usuario):
         # pedir_opcion ya rechaza opciones inexistentes: no hace falta el "else: opcion no valida"
         opcion = pedir_opcion((1, 2, 3, 4, 0), "Seleccione una opción: ")
         if opcion == 1:
-            submenu_estudiantes(estudiantes, materias, calificaciones)
+            submenu_estudiantes(estudiantes, calificaciones)
         elif opcion == 2:
             submenu_materias(estudiantes, materias, calificaciones)
         elif opcion == 3:
