@@ -6,22 +6,22 @@
 # tuplas y conjuntos) por consultas reales sobre los datos del sistema.
 # ============================================================
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from base_comun import (cargar_datos_iniciales, login, pedir_opcion, pedir_entero,
                         condicion_a_texto, es_aprobada)
 from persistencia import (ARCHIVO_DATOS, guardar_datos_json, cargar_datos_json, respaldar_archivo,
                           detectar_calificaciones_huerfanas, registrar_operacion, leer_log, resumir_log)
+from persona_1_estudiantes import submenu_estudiantes
 
 
 # ------------------------------------------------------------
-# SUBMENUS DE P1 Y P2 (PENDIENTES DE INTEGRACION)
-# Contrato: cada submenu recibe los 3 diccionarios y los modifica en el lugar
-# (los diccionarios son mutables, no hace falta devolverlos).
-# Cuando P1 y P2 suban su parte, se borran estas 3 funciones y se importan las reales.
+# SUBMENUS DE P1 Y P2
+# Los diccionarios se modifican en el lugar, por lo que no hace falta devolverlos.
 # ------------------------------------------------------------
-
-def submenu_estudiantes(estudiantes, materias, calificaciones):
-    print("Submenú de estudiantes: pendiente de integración.")
-
 
 def submenu_materias(estudiantes, materias, calificaciones):
     print("Submenú de materias: pendiente de integración.")
@@ -193,7 +193,7 @@ def menu_principal(estudiantes, materias, calificaciones, usuario):
         # pedir_opcion ya rechaza opciones inexistentes: no hace falta el "else: opcion no valida"
         opcion = pedir_opcion((1, 2, 3, 4, 0), "Seleccione una opción: ")
         if opcion == 1:
-            submenu_estudiantes(estudiantes, materias, calificaciones)
+            submenu_estudiantes(estudiantes, calificaciones)
         elif opcion == 2:
             submenu_materias(estudiantes, materias, calificaciones)
         elif opcion == 3:
