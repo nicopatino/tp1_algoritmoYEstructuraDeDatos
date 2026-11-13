@@ -1,6 +1,6 @@
 # ============================================================
 # SISTEMA DE GESTION ACADEMICA - SEGUNDA PARTE
-# MENU PRINCIPAL Y CONSULTAS (Persona 3: Marcos Silva Sapia)
+# MENU PRINCIPAL Y CONSULTAS
 #
 # Reemplaza al "submenu 4" de la Parte 1 (demos de diccionarios,
 # tuplas y conjuntos) por consultas reales sobre los datos del sistema.
