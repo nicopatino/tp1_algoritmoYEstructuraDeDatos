@@ -1,4 +1,4 @@
-# Persona 3 — Base común, menú principal y persistencia
+# Marcos — Base común, menú principal y persistencia
 
 Archivos: `base_comun.py`, `persistencia.py`, `menu_principal.py`, `test_base_comun.py`, `test_persistencia.py`.
 
