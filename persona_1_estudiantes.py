@@ -61,8 +61,16 @@ def baja_estudiante(estudiantes, calificaciones, codigo, borrar_calificaciones):
     codigos_borrar = []
     # Recorre todas las calificaciones registradas.
     for codigo_calif, datos in calificaciones.items():
+        # Admite los formatos de calificacion usados por las distintas partes del TP.
+        if isinstance(datos, dict):
+            codigo_estudiante = datos.get("estudiante", datos.get("cod_est"))
+        elif isinstance(datos, tuple) and len(datos) == 5:
+            # Las tuplas contienen (codigo_calificacion, estudiante, materia, nota, condicion).
+            codigo_estudiante = datos[1]
+        else:
+            codigo_estudiante = None
         # Guarda el codigo de cada calificacion del estudiante indicado.
-        if datos["cod_est"] == codigo:
+        if codigo_estudiante == codigo:
             codigos_borrar.append(codigo_calif)
 
     # Si hay calificaciones asociadas, solo se permite la baja si se pidio borrarlas.
