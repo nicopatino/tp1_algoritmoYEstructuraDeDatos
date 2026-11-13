@@ -2,9 +2,9 @@
 
 ## Versión oficial
 
-La versión actualizada del sistema está en la **carpeta raíz** de este repositorio. Ejecutá todos los comandos de esta guía desde esa carpeta.
+El sistema está en la **carpeta raíz** de este repositorio. Ejecutá todos los comandos de esta guía desde esa carpeta.
 
-La carpeta `tpo2/` contiene una copia anterior: no incluye los módulos actuales `materias.py` y `calificaciones.py`, y su menú conserva submenús provisionales. No la uses para iniciar la versión actual. No fue eliminada para conservar esa copia de referencia.
+La copia anterior que estaba en `tpo2/` se eliminó para que haya un solo `menu_principal.py`; si hace falta consultarla, sigue disponible en el historial de git.
 
 ## Ejecución
 
@@ -25,10 +25,11 @@ El menú principal guarda los cambios al volver de los submenús. Los archivos `
 | `base_comun.py` | Datos iniciales, constantes, validaciones compartidas, entrada de datos e inicio de sesión. |
 | `persistencia.py` | Guardado y carga JSON, recuperación de claves numéricas, compatibilidad de calificaciones históricas y nuevas, y registro de operaciones. |
 | `menu_principal.py` | Inicio del sistema, menú principal, consultas e informes; coordina el guardado al volver de los submenús. |
+| `persona_1_estudiantes.py` | Altas, bajas, modificaciones, listado ordenado, búsqueda por nombre, conteo por año y control de correos repetidos de estudiantes. |
 | `materias.py` | Altas, bajas, modificaciones, búsqueda, listados y ordenamiento de materias. Rechaza la baja si existen calificaciones asociadas. |
 | `calificaciones.py` | Gestión de actas como tuplas, validaciones, búsqueda, listados, promedios, materias sin calificaciones, recursividad y exportación TXT/CSV. |
 
-El submenú de Estudiantes en `menu_principal.py` todavía está pendiente de integración.
+El menú principal integra los submenús de Estudiantes, Materias y Calificaciones, más el submenú de Consultas.
 
 ## Pruebas
 
